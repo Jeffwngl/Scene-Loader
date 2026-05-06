@@ -14,6 +14,10 @@ export default function Sidebar({ engine }: SidebarProps) {
         setOpenMenu((prev) => (prev === menu ? null : menu));
     };
 
+    const camera = engine?.getCamera();
+    const renderer = engine?.getRenderer();
+    const scene = engine?.getScene();
+
     return (
         <aside
             className="bg-dark text-light border-end border-secondary p-3"
@@ -44,7 +48,10 @@ export default function Sidebar({ engine }: SidebarProps) {
                     </button>
                     {openMenu === "camera" && (
                         <div className="dropdown-menu show position-static bg-dark border-secondary mt-1">
-                            <button className="dropdown-item text-light small">
+                            <button
+                                className="dropdown-item text-light small"
+                                onClick={() => camera?.resetTarget()}
+                            >
                                 Reset Camera
                             </button>
                             <button className="dropdown-item text-light small">
@@ -77,7 +84,13 @@ export default function Sidebar({ engine }: SidebarProps) {
                             <button className="dropdown-item text-light small">
                                 Add Directional Light
                             </button>
-                            <button className="dropdown-item text-light small">
+                            <button
+                                className="dropdown-item text-light small"
+                                onClick={() => {
+                                    const s = scene?.getScene();
+                                    if (s) renderer?.toggleShadows(s);
+                                }}
+                            >
                                 Toggle Shadows
                             </button>
                         </div>
@@ -138,8 +151,39 @@ export default function Sidebar({ engine }: SidebarProps) {
                     )}
                 </div>
 
+                <div>
+                    <button
+                        className="btn btn-outline-light btn-sm w-100 text-start"
+                        onClick={() => toggle("manageScene")}
+                    >
+                        {openMenu === "manageScene" ? (
+                            <ChevronUp size={17} />
+                        ) : (
+                            <ChevronDown size={17} />
+                        )}{" "}
+                        Manage Scene
+                    </button>
+                    {openMenu === "manageScene" && (
+                        <div className="dropdown-menu show position-static bg-dark border-secondary mt-1">
+                            <button className="dropdown-item text-light small">
+                                Layer 1
+                            </button>
+                            <button className="dropdown-item text-light small">
+                                Layer 2
+                            </button>
+                        </div>
+                    )}
+                </div>
+
                 <button className="btn btn-outline-light btn-sm text-start">
                     Import Skybox
+                </button>
+
+                <button
+                    className="btn btn-outline-light btn-sm text-start"
+                    onClick={() => scene?.toggleFloor()}
+                >
+                    Toggle Floor
                 </button>
 
                 <button

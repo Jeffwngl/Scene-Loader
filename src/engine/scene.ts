@@ -2,6 +2,8 @@ import * as THREE from "three";
 
 class Scene {
     private scene!: THREE.Scene;
+    private floorVisible!: boolean;
+    private floor!: THREE.Mesh;
 
     init() {
         this.scene = new THREE.Scene();
@@ -17,7 +19,50 @@ class Scene {
         const dirLight = new THREE.DirectionalLight(0xffffff, 1);
         dirLight.position.set(2, 2, 2);
         dirLight.castShadow = true;
+        dirLight.shadow.bias = -0.0001;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
         this.scene.add(dirLight);
+    }
+
+    private createFloor() {
+        const size = 5;
+
+        const data = new Uint8Array([
+            180, 180, 180, 255, 80, 80, 80, 255, 80, 80, 80, 255, 180, 180, 180,
+            255,
+        ]);
+
+        const texture = new THREE.DataTexture(data, 2, 2);
+        texture.format = THREE.RGBAFormat;
+        texture.magFilter = THREE.NearestFilter;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(20, 20);
+        texture.needsUpdate = true;
+
+        const geometry = new THREE.PlaneGeometry(size, size);
+        const material = new THREE.MeshStandardMaterial({ map: texture });
+
+        this.floor = new THREE.Mesh(geometry, material);
+        this.floor.rotation.x = -Math.PI / 2; // lay flat
+        this.floor.position.y = -0.4;
+        this.floor.receiveShadow = true;
+        this.floor.userData.isFloor = true;
+    }
+
+    toggleFloor() {
+        if (!this.floor) this.createFloor();
+
+        this.floorVisible = !this.floorVisible;
+
+        if (this.floorVisible) {
+            this.scene.add(this.floor);
+        } else {
+            this.scene.remove(this.floor);
+        }
+
+        return this.floorVisible;
     }
 
     addModel(model: THREE.Group) {
