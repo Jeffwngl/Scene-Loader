@@ -1,0 +1,8 @@
+.drag-active {
+  outline: 3px dashed rgba(0, 123, 255, 0.8);
+  outline-offset: -10px;
+  background-color: rgba(0, 123, 255, 0.08);
+  box-shadow: inset 0 0 60px rgba(0, 123, 255, 0.3);
+  transform: none;
+  transition: all 0.2s ease;
+}
